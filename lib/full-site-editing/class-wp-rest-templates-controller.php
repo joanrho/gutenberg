@@ -371,19 +371,20 @@ class WP_REST_Templates_Controller extends WP_REST_Controller {
 	 */
 	public function prepare_item_for_response( $template, $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		$result = array(
-			'id'          => $template->id,
-			'theme'       => $template->theme,
-			'content'     => array( 'raw' => $template->content ),
-			'slug'        => $template->slug,
-			'is_custom'   => $template->is_custom,
-			'type'        => $template->type,
-			'description' => $template->description,
-			'title'       => array(
+			'id'                   => $template->id,
+			'theme'                => $template->theme,
+			'content'              => array( 'raw' => $template->content ),
+			'slug'                 => $template->slug,
+			'is_custom'            => $template->is_custom,
+			'type'                 => $template->type,
+			'description'          => $template->description,
+			'title'                => array(
 				'raw'      => $template->title,
 				'rendered' => $template->title,
 			),
-			'status'      => $template->status,
-			'wp_id'       => $template->wp_id,
+			'status'               => $template->status,
+			'wp_id'                => $template->wp_id,
+			'original_file_exists' => $template->original_file_exists
 		);
 
 		$result = $this->add_additional_fields_to_object( $result, $request );
@@ -478,13 +479,13 @@ class WP_REST_Templates_Controller extends WP_REST_Controller {
 			'title'      => $this->post_type,
 			'type'       => 'object',
 			'properties' => array(
-				'id'          => array(
+				'id'                   => array(
 					'description' => __( 'ID of template.', 'gutenberg' ),
 					'type'        => 'string',
 					'context'     => array( 'embed', 'view', 'edit' ),
 					'readonly'    => true,
 				),
-				'slug'        => array(
+				'slug'                 => array(
 					'description' => __( 'Unique slug identifying the template.', 'gutenberg' ),
 					'type'        => 'string',
 					'context'     => array( 'embed', 'view', 'edit' ),
@@ -492,44 +493,50 @@ class WP_REST_Templates_Controller extends WP_REST_Controller {
 					'minLength'   => 1,
 					'pattern'     => '[a-zA-Z_\-]+',
 				),
-				'theme'       => array(
+				'theme'                => array(
 					'description' => __( 'Theme identifier for the template.', 'gutenberg' ),
 					'type'        => 'string',
 					'context'     => array( 'embed', 'view', 'edit' ),
 				),
-				'is_custom'   => array(
+				'is_custom'            => array(
 					'description' => __( 'Whether the template is customized.', 'gutenberg' ),
 					'type'        => 'bool',
 					'context'     => array( 'embed', 'view', 'edit' ),
 					'readonly'    => true,
 				),
-				'content'     => array(
+				'content'              => array(
 					'description' => __( 'Content of template.', 'gutenberg' ),
 					'type'        => array( 'object', 'string' ),
 					'default'     => '',
 					'context'     => array( 'embed', 'view', 'edit' ),
 				),
-				'title'       => array(
+				'title'                => array(
 					'description' => __( 'Title of template.', 'gutenberg' ),
 					'type'        => array( 'object', 'string' ),
 					'default'     => '',
 					'context'     => array( 'embed', 'view', 'edit' ),
 				),
-				'description' => array(
+				'description'          => array(
 					'description' => __( 'Description of template.', 'gutenberg' ),
 					'type'        => 'string',
 					'default'     => '',
 					'context'     => array( 'embed', 'view', 'edit' ),
 				),
-				'status'      => array(
+				'status'               => array(
 					'description' => __( 'Status of template.', 'gutenberg' ),
 					'type'        => 'string',
 					'default'     => 'publish',
 					'context'     => array( 'embed', 'view', 'edit' ),
 				),
-				'wp_id'       => array(
+				'wp_id'                => array(
 					'description' => __( 'Post ID.', 'gutenberg' ),
 					'type'        => 'integer',
+					'context'     => array( 'embed', 'view', 'edit' ),
+					'readonly'    => true,
+				),
+				'original_file_exists' => array(
+					'description' => __( 'Original file exists.', 'gutenberg' ),
+					'type'        => 'bool',
 					'context'     => array( 'embed', 'view', 'edit' ),
 					'readonly'    => true,
 				),
