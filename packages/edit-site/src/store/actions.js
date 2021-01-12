@@ -3,6 +3,12 @@
  */
 import { controls } from '@wordpress/data';
 import { apiFetch } from '@wordpress/data-controls';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import isTemplateRevertable from '../utils/is-template-revertable';
 
 /**
  * Returns an action object used to toggle a feature flag.
@@ -235,4 +241,69 @@ export function updateSettings( settings ) {
 		type: 'UPDATE_SETTINGS',
 		settings,
 	};
+}
+
+/**
+ * Reverts a template to its original theme-provided file.
+ *
+ * @param {Object} template The template to revert.
+ */
+export function* revertTemplate( template ) {
+	if ( ! isTemplateRevertable( template ) ) {
+		yield controls.dispatch(
+			'core/notices',
+			'createErrorNotice',
+			__( 'This template is not revertable.' ),
+			{ type: 'snackbar' }
+		);
+		return;
+	}
+
+	try {
+		yield controls.dispatch(
+			'core',
+			'deleteEntityRecord',
+			'postType',
+			'wp_template',
+			template.id
+		);
+
+		const fileTemplate = yield controls.resolveSelect(
+			'core',
+			'getEntityRecord',
+			'postType',
+			'wp_template',
+			template.id
+		);
+
+		if ( ! fileTemplate ) {
+			yield controls.dispatch(
+				'core/notices',
+				'createErrorNotice',
+				__(
+					'The editor has encountered an unexpected error. Please reload.'
+				),
+				{ type: 'snackbar' }
+			);
+			return;
+		}
+
+		yield controls.dispatch(
+			'core/notices',
+			'createSuccessNotice',
+			__( 'Template reverted.' ),
+			{ type: 'snackbar' }
+		);
+	} catch ( error ) {
+		const errorMessage =
+			error.message && error.code !== 'unknown_error'
+				? error.message
+				: __( 'Template revert failed. Please reload.' );
+		yield controls.dispatch(
+			'core/notices',
+			'createErrorNotice',
+			errorMessage,
+			{ type: 'snackbar' }
+		);
+	}
 }
